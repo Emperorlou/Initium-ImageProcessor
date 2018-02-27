@@ -1,11 +1,9 @@
 package com.journaldev.servlet;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -66,12 +63,28 @@ public class UploadDownloadFileServlet extends HttpServlet {
 		System.out.println("File downloaded at client successfully");
 	}
 
+	public enum UploadType
+	{
+		kittify,
+		npc,
+		banner
+	}
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if(!ServletFileUpload.isMultipartContent(request)){
 			throw new ServletException("Content type is not multipart/form-data");
 		}
+		String type = request.getParameter("type");
+		try
+		{
+			UploadType.valueOf(type);
+		}
+		catch(Exception e)
+		{
+			throw new RuntimeException("Invalid type specified: "+type);
+		}
 		
-		response.setContentType("text/html");
+		
 //		PrintWriter out = response.getWriter();
 //		out.write("<html><head></head><body>");
 		try {
@@ -84,45 +97,66 @@ public class UploadDownloadFileServlet extends HttpServlet {
 				System.out.println("ContentType="+fileItem.getContentType());
 				System.out.println("Size in bytes="+fileItem.getSize());
 				
-				File file = new File(request.getServletContext().getAttribute("FILES_DIR")+File.separator+fileItem.getName());
-				fileItem.write(file);
-//				out.write("File "+fileItem.getName()+ " uploaded successfully.");
-//				out.write("<br>");
-//				out.write("<a href=\"process/upload/"+fileItem.getName()+"\">View "+fileItem.getName()+"</a>");
 				
-				String line = "C:\\Initium\\ImageProcessorServer\\webapps\\process\\WEB-INF\\kittify.exe";
-				CommandLine cmdLine = new CommandLine(line);
-				cmdLine.addArgument("C:\\Users\\Owner\\Google Drive\\Initium\\Asset Collaboration\\New Icon Art\\Ava\\weird-green-thing1.png");
+				if (type.equals("banner"))
+				{
+					File file = new File(new File("anything").getAbsolutePath().replace(File.separator+"config"+File.separator+"anything",  "")+File.separator+"docroot"+File.separator+"images"+File.separator+type+File.separator+"sourceimage.jpg");
+					file.getParentFile().mkdirs();
+					fileItem.write(file);
+					
+					executeDroplet("fullscreen-banner1", file);
+				}
+				else if (type.equals("kittify"))
+				{
+					File file = new File(new File("anything").getAbsolutePath().replace(File.separator+"config"+File.separator+"anything",  "")+File.separator+"docroot"+File.separator+"images"+File.separator+type+File.separator+"sourceimage.png");
+					file.getParentFile().mkdirs();
+					fileItem.write(file);
+					
+					executeDroplet("kittify1", file);
+					executeDroplet("kittify2", file);
+					executeDroplet("kittify3", file);
+					executeDroplet("kittify4", file);
+				}
+				else
+					throw new RuntimeException("Unhandled type.");
 				
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();				
-				DefaultExecutor executor = new DefaultExecutor();
-			    PumpStreamHandler streamHandler = new PumpStreamHandler(response.getOutputStream());
-			    executor.setStreamHandler(streamHandler);				
-				System.out.println("Executing "+cmdLine.toString());
-				executor.setExitValue(1);			
-				int exitValue=-100;
-				try
-				{
-					exitValue = executor.execute(cmdLine);
-				}
-				catch (ExecuteException e)
-				{
-					e.printStackTrace();
-				}
-				catch (IOException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				System.out.println("Exit value: "+exitValue);
 				
+				
+				
+				response.sendRedirect("index.html");
 			}
 		} catch (FileUploadException e) {
+			e.printStackTrace();
 //			out.write("Exception in uploading file.");
 		} catch (Exception e) {
+			e.printStackTrace();
 //			out.write("Exception in uploading file.");
 		}
 //		out.write("</body></html>");
+	}
+	public void executeDroplet(String dropletFilenamePart, File file)
+	{
+		String line = "C:\\Initium\\Initium-ImageProcessor\\droplets\\"+dropletFilenamePart+".exe";
+		CommandLine cmdLine = new CommandLine(line);
+		cmdLine.addArgument(file.getAbsolutePath());
+		
+		DefaultExecutor executor = new DefaultExecutor();
+		System.out.println("Executing "+cmdLine.toString());
+		executor.setExitValue(1);			
+		int exitValue=-100;
+		try
+		{
+			exitValue = executor.execute(cmdLine);
+		}
+		catch (ExecuteException e)
+		{
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		System.out.println("Exit value: "+exitValue);
 	}
 
 }

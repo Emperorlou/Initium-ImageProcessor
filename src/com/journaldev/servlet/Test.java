@@ -19,7 +19,7 @@ public class Test
 	 */
 	public static void main(String[] args)
 	{
-		String line = "C:\\Initium\\ImageProcessorServer\\webapps\\process\\WEB-INF\\kittify.exe";
+		String line = "notepad.exe";
 		CommandLine cmdLine = new CommandLine(line);
 		cmdLine.addArgument("C:\\Users\\Owner\\Google Drive\\Initium\\Asset Collaboration\\New Icon Art\\Ava\\weird-green-thing1.png");
 		
