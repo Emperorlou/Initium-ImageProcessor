@@ -97,10 +97,13 @@ public class UploadDownloadFileServlet extends HttpServlet {
 				System.out.println("ContentType="+fileItem.getContentType());
 				System.out.println("Size in bytes="+fileItem.getSize());
 				
+				String basePath = System.getProperty("overrideImageFolder");
+				if (basePath==null)
+					basePath = new File("anything").getAbsolutePath().replace(File.separator+"config"+File.separator+"anything",  "")+File.separator+"docroot";
 				
 				if (type.equals("banner"))
 				{
-					File file = new File(new File("anything").getAbsolutePath().replace(File.separator+"config"+File.separator+"anything",  "")+File.separator+"docroot"+File.separator+"images"+File.separator+type+File.separator+"sourceimage.jpg");
+					File file = new File(basePath+File.separator+"images"+File.separator+type+File.separator+"sourceimage.jpg");
 					file.getParentFile().mkdirs();
 					fileItem.write(file);
 					
@@ -108,14 +111,14 @@ public class UploadDownloadFileServlet extends HttpServlet {
 				}
 				else if (type.equals("kittify"))
 				{
-					File file = new File(new File("anything").getAbsolutePath().replace(File.separator+"config"+File.separator+"anything",  "")+File.separator+"docroot"+File.separator+"images"+File.separator+type+File.separator+"sourceimage.png");
+					File file = new File(basePath+File.separator+"images"+File.separator+type+File.separator+"sourceimage.png");
 					file.getParentFile().mkdirs();
 					fileItem.write(file);
 					
 					executeDroplet("kittify1", file);
 					executeDroplet("kittify2", file);
 					executeDroplet("kittify3", file);
-					executeDroplet("kittify4", file);
+//					executeDroplet("kittify4", file);
 				}
 				else
 					throw new RuntimeException("Unhandled type.");
@@ -157,6 +160,18 @@ public class UploadDownloadFileServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		System.out.println("Exit value: "+exitValue);
+		
+		try
+		{
+			synchronized(this)
+			{
+				this.wait(1000);
+			}
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 }
