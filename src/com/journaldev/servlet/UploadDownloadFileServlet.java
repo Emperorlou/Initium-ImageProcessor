@@ -118,7 +118,10 @@ public class UploadDownloadFileServlet extends HttpServlet {
 					executeDroplet("kittify1", file);
 					executeDroplet("kittify2", file);
 					executeDroplet("kittify3", file);
-//					executeDroplet("kittify4", file);
+					executeDroplet("kittify4", file);
+					executeDroplet("kittify6", file);
+					executeDroplet("kittify7", file);
+					executeDroplet("kittify5", file);
 				}
 				else
 					throw new RuntimeException("Unhandled type.");
