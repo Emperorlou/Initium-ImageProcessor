@@ -17,6 +17,10 @@ body
 {
 	font-family:sans-serif;
 }
+.section
+{
+	margin:20px;
+}
 .process-type
 {
 	padding:4px;
@@ -69,12 +73,35 @@ body
 	image-rendering:pixelated;
 }
 
-
+#refresh-images
+{
+	margin:10px;
+}
 
 </style>
+
+<script type='text/javascript'>
+function refreshImages()
+{
+	var images = $("img");
+	for(var i = 0; i<images.length; i++)
+	{
+		var img = $(images[i]);
+		var src = img.attr("src");
+		
+		if (src.indexOf("?v=")>-1)
+			src = src.split("?v=")[0];
+		
+		src+="?v="+Math.random();
+		img.attr("src", src);
+		img.parent().attr("href", src);
+	}
+}
+</script>
 </head>
 <body>
 
+	<input id='refresh-images' type='button' value='Refresh images' onclick='refreshImages()'/>
 	<div class='process-type'>
 	
 		<h2>Full-screen banners</h2>
@@ -93,12 +120,17 @@ body
 			</div>
 		</div>
 		
-		
 		<form action="UploadDownloadFileServlet?type=banner" method="post" enctype="multipart/form-data">
 		Select image to upload:<input type="file" name="fileName">
 		<input type="submit" value="Upload">
 		</form>
 	
+		<h5>TIPS</h5>
+		<ul>
+			<li>Ideally, in order to make sure your final result will work well on mobile AND on desktop, make sure that the important part of your picture is in the center. Imagine your image split up into 9 cells (3x3; equal sized), the middle cell (cell number 5) should contain everything that is needed.</li>
+			<li>The final result will be lighter but that is ok as it simulates a painting a bit better and matches our overall style. Also note that when its night time or raining in Initium, the images will be darker (if they are for outside anyway).</li>
+			<li>Try to only use images that are very large (1920 pixels wide). The final result will be resized to 1920x1500.</li>
+		</ul>
 	</div>
 
 	<div class='process-type'>
@@ -163,11 +195,22 @@ body
 			</div>
 		</div>
 		
+		<div class='section'>
+			<i style='color:#FF0000'>These options are not yet implemented</i>
+			<div><input type='checkbox' id='kittify-brighten'/> Brighten</div>
+			<div><input type='checkbox' id='kittify-addborder'/> Add Border</div>
+		</div>
+		
 		<form action="UploadDownloadFileServlet?type=kittify" method="post" enctype="multipart/form-data">
 		Select image to upload:<input type="file" name="fileName">
 		<input type="submit" value="Upload">
 		</form>
 	
+		<h5>TIPS</h5>
+		<ul>
+			<li>Try to remove any black border that might be on the icon before processing for best results</li>
+			<li>Worry about resizing/placing/fitting the icon AFTER processing it here since it's placement and size will be ignored by this processor</li>
+		</ul>
 	</div>
 
 
