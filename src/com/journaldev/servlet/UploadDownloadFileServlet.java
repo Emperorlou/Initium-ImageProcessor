@@ -108,6 +108,7 @@ public class UploadDownloadFileServlet extends HttpServlet {
 					fileItem.write(file);
 					
 					executeDroplet("fullscreen-banner1", file);
+					executeDroplet("fullscreen-banner2", file);
 				}
 				else if (type.equals("kittify"))
 				{
